@@ -1,0 +1,184 @@
+[
+    {
+        "state": "OPEN",
+        "timestamp": [
+            2017,
+            11,
+            13,
+            14,
+            0,
+            21,
+            644000000
+        ],
+        "user": {
+            "id": "User1"
+        },
+        "direction": "SELL",
+        "quantity": 1000,
+        "price": {
+            "amount": 100.2,
+            "currency": "CAD"
+        },
+        "RIC": {
+            "root": "VOD",
+            "exchange": "L"
+        },
+        "ID": 0
+    },
+    {
+        "state": "OPEN",
+        "timestamp": [
+            2017,
+            11,
+            13,
+            14,
+            0,
+            22,
+            645000000
+        ],
+        "user": {
+            "id": "User2"
+        },
+        "direction": "BUY",
+        "quantity": 1000,
+        "price": {
+            "amount": 100.2,
+            "currency": "CAD"
+        },
+        "RIC": {
+            "root": "VOD",
+            "exchange": "L"
+        },
+        "ID": 1
+    },
+    {
+        "state": "OPEN",
+        "timestamp": [
+            2017,
+            11,
+            13,
+            14,
+            0,
+            23,
+            646000000
+        ],
+        "user": {
+            "id": "User1"
+        },
+        "direction": "BUY",
+        "quantity": 1000,
+        "price": {
+            "amount": 99,
+            "currency": "CAD"
+        },
+        "RIC": {
+            "root": "VOD",
+            "exchange": "L"
+        },
+        "ID": 2
+    },
+    {
+        "state": "OPEN",
+        "timestamp": [
+            2017,
+            11,
+            13,
+            14,
+            0,
+            23,
+            746000000
+        ],
+        "user": {
+            "id": "User1"
+        },
+        "direction": "BUY",
+        "quantity": 1000,
+        "price": {
+            "amount": 101,
+            "currency": "CAD"
+        },
+        "RIC": {
+            "root": "VOD",
+            "exchange": "L"
+        },
+        "ID": 3
+    },
+    {
+        "state": "OPEN",
+        "timestamp": [
+            2017,
+            11,
+            13,
+            14,
+            0,
+            24,
+            747000000
+        ],
+        "user": {
+            "id": "User2"
+        },
+        "direction": "SELL",
+        "quantity": 500,
+        "price": {
+            "amount": 102,
+            "currency": "CAD"
+        },
+        "RIC": {
+            "root": "VOD",
+            "exchange": "L"
+        },
+        "ID": 4
+    },
+    {
+        "state": "OPEN",
+        "timestamp": [
+            2017,
+            11,
+            13,
+            14,
+            0,
+            25,
+            748000000
+        ],
+        "user": {
+            "id": "User1"
+        },
+        "direction": "BUY",
+        "quantity": 500,
+        "price": {
+            "amount": 103,
+            "currency": "CAD"
+        },
+        "RIC": {
+            "root": "VOD",
+            "exchange": "L"
+        },
+        "ID": 5
+    },
+    {
+        "state": "OPEN",
+        "timestamp": [
+            2017,
+            11,
+            13,
+            14,
+            0,
+            26,
+            749000000
+        ],
+        "user": {
+            "id": "User2"
+        },
+        "direction": "SELL",
+        "quantity": 1000,
+        "price": {
+            "amount": 98,
+            "currency": "CAD"
+        },
+        "RIC": {
+            "root": "VOD",
+            "exchange": "L"
+        },
+        "ID": 6
+    }
+]
