@@ -20,6 +20,7 @@ import static com.rbc.cm.j65336n1.api.model.Schemas.Entity.Meta.Fields.ID;
 import static com.rbc.cm.j65336n1.api.model.Schemas.Order.Meta.Fields.DIRECTION;
 import static com.rbc.cm.j65336n1.api.model.Schemas.Order.Meta.Fields.STATE;
 import static com.rbc.cm.j65336n1.api.model.Schemas.Order.Meta.Fields.USER;
+import static com.rbc.cm.j65336n1.api.model.Schemas.Order.Meta.Fields.RIC;
 import static com.rbc.cm.j65336n1.api.model.State.OPEN;
 import static java.time.LocalDateTime.now;
 import static java.util.Optional.of;
@@ -48,12 +49,19 @@ import com.rbc.cm.j65336n1.api.model.Direction;
 import static com.rbc.cm.j65336n1.api.model.Direction.BUY;
 import static com.rbc.cm.j65336n1.api.model.Direction.SELL;
 import com.rbc.cm.j65336n1.api.model.Order;
+import com.rbc.cm.j65336n1.api.model.RIC;
 import com.rbc.cm.j65336n1.api.model.State;
+import com.rbc.cm.j65336n1.api.model.User;
 import com.rbc.cm.j65336n1.business.RulesEngine;
 import com.rbc.cm.j65336n1.middleware.DataDepot;
 import com.rbc.cm.j65336n1.tools.Transpiler;
 
 import reactor.core.publisher.Mono;
+
+import static com.rbc.cm.j65336n1.api.model.Utils.parse;
+import static com.rbc.cm.j65336n1.api.model.Utils.build_filter_criteria;
+
+import com.rbc.cm.j65336n1.business.RulesEngine.Filter;
 
 /**
  * @author Cristian Malinescu
@@ -200,31 +208,33 @@ public class ApiHandlers {
 
            final String user = qry_prms.getFirst( USER ),
                         drctn_str = qry_prms.getFirst( DIRECTION ),
-                        state_str = qry_prms.getFirst( STATE );
+                        state_str = qry_prms.getFirst( STATE ),
+                        ric_str = qry_prms.getFirst( RIC );
                
-           Direction drctn = null;
-           if (null != drctn_str && !drctn_str.trim().isEmpty()) drctn = Direction.valueOf(drctn_str);
-           
-           State state = null;
-           if (null != state_str && !state_str.trim().isEmpty()) state = State.valueOf(state_str);
+          final Direction drctn = null != drctn_str && !drctn_str.trim().isEmpty() ? Direction.valueOf(drctn_str)
+                                                                                   : null;
+          final State state = null != state_str && !state_str.trim().isEmpty() ? State.valueOf(state_str)
+                                                                               : null;
+          final RIC ric = null != ric_str && !ric_str.trim().isEmpty() ? parse(ric_str)
+                                                                       : null;
                
            if (_lg.isDebugEnabled())
-             _lg.debug(String.format("Filter params '%s'=[{}], '%s'=[{}], '%s'=[{}]",
-                                     USER, DIRECTION, STATE),
-                       user, drctn, state);
-               
-           Optional<Collection<Order>> orders = null;
-           
-           if (null != drctn)
-             switch (drctn) {
-               case BUY:
-               case SELL:
-               default: orders = _ddp.get();
-             }
+             _lg.debug(String.format("Filter params '%s'=[{}], '%s'=[{}], '%s'=[{}], '%s'=[{}]",
+                                     RIC, USER, DIRECTION, STATE),
+                                     ric, user, drctn, state);
 
-           orders = _ddp.get();
-                                   
-           return success( orders );
+          final Order criteria = build_filter_criteria(ric, drctn, new User(user));
+           
+          final Optional<Filter> filter = _rngn.build(of(criteria));
+           
+          if (filter.isPresent())
+            return filter.get()
+                         .orders()
+                         .collectList()
+                         .flatMap(o -> success(of(o)));
+           
+
+           return failure();
          })
         .switchIfEmpty(failure());
   }

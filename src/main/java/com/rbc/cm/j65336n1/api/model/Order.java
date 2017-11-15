@@ -190,5 +190,18 @@ final public class Order extends EntityTemplate<Order> implements Fields {
                               .state(val.state());
   }
   
+  /*
+   * Search criteria helper
+   **/
+  private Order(final RIC ric, final Direction direction, final User user) {
+    _ric = ric;
+    _direction = direction;
+    _user = user;
+  }
+
+  static Order build_filter_criteria(final RIC ric, final Direction direction, final User user) {
+    return new Order(ric, direction, user);
+  }
+
   static final private long serialVersionUID = 1L;
 }

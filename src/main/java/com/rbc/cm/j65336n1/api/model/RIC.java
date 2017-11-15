@@ -82,6 +82,19 @@ public class RIC implements Meta, Fields {
 
   public RIC() {/**/}
 
+  public RIC(final String val) {
+    assert null != val &&
+           val.trim().length() != 0 &&
+           val.contains(".");
+    
+    final String[] sgmnts = val.split("\\.");
+    
+    assert 2 == sgmnts.length;
+
+    root(sgmnts[0]);
+    exchange(sgmnts[1]);
+  }
+
   public RIC(final String root, final String exchange) {
     root(root);
     exchange(exchange);

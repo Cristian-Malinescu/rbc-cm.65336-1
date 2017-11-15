@@ -28,14 +28,18 @@ import java.util.Optional;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.concurrent.ThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.rbc.cm.j65336n1.api.model.Direction;
 import com.rbc.cm.j65336n1.api.model.Order;
+import com.rbc.cm.j65336n1.api.model.RIC;
 import com.rbc.cm.j65336n1.api.model.State;
+import com.rbc.cm.j65336n1.api.model.User;
 import com.rbc.cm.j65336n1.middleware.DataDepot;
 
 import reactor.core.publisher.Flux;
@@ -46,6 +50,7 @@ import reactor.core.publisher.Mono;
  * @since 1.0.0
  */
 @Component
+@ThreadSafe
 public class RulesEngine {
 
   /*
@@ -170,4 +175,97 @@ public class RulesEngine {
   public RulesEngine() {}
 
   final private Logger _lg = LoggerFactory.getLogger(getClass());
+    
+  /*
+   * 
+   **/
+  public Optional<Filter> build(final Optional<Order> criteria) {
+    assert null != criteria;
+    Optional<Filter> strategy = of(new All());
+    
+    if (criteria.isPresent()) {
+      final Order val = criteria.get();
+    
+      final RIC ric = val.ric();
+      final Direction drctn = val.direction();
+      final User usr = val.user();
+      
+      if (null != ric) {
+        if (null != usr && null != drctn) strategy = of(new All());
+
+        if (null == usr  && null == drctn) strategy = of(new AverageExecutionPrice(criteria));
+        
+        if (null != usr && null == drctn) strategy = of(new ExecutedQuantity(criteria));
+        
+        if (null != drctn && null == usr) strategy = of(new OpenInterest(criteria));
+      }
+    }
+    
+    return strategy;
+  }
+
+  /*
+   * 
+   **/
+  public interface Filter { Flux<Order> orders(); }
+
+  /*
+   * 
+   **/
+  private abstract class FilterTemplate implements Filter {
+    @Override
+    public Flux<Order> orders() { return _criteria.isPresent() ? all() : Flux.empty(); }
+    
+    final protected Optional<Order> _criteria;
+
+    protected FilterTemplate() { _criteria = Optional.empty(); }
+    
+    protected FilterTemplate(final Optional<Order> criteria) { _criteria = criteria; }
+  }
+  
+  /*
+   * 
+   **/
+  private final class OpenInterest extends FilterTemplate {
+    @Override
+    public Flux<Order> orders() {
+      return all();
+    }
+
+    OpenInterest(final Optional<Order> criteria) { super(criteria); }
+  }
+  
+  /*
+   * 
+   **/
+  private final class AverageExecutionPrice extends FilterTemplate {
+    @Override
+    public Flux<Order> orders() {
+      return all();
+    }
+
+    AverageExecutionPrice(final Optional<Order> criteria) { super(criteria); }
+  }
+
+  /*
+   * 
+   **/
+  private final class ExecutedQuantity extends FilterTemplate {
+    @Override
+    public Flux<Order> orders() {
+      return all();
+    }
+
+    ExecutedQuantity(final Optional<Order> criteria) { super(criteria); }
+  }
+
+  /*
+   * 
+   **/
+  private final class All extends FilterTemplate { All() { super(of(new Order())); } }
+  
+  /*
+   * 
+   **/
+  private final class Empty extends FilterTemplate { Empty() {/**/} }
 }
